@@ -6,6 +6,7 @@ class Player {
     this.x = this.game.width * 0.5 - this.width * 0.5;
     this.y = this.game.height - this.height;
     this.speed = 10;
+    this.lives = 3;
   }
   draw(context) {
     context.fillRect(this.x, this.y, this.width, this.height);
@@ -77,9 +78,16 @@ class Enemy {
       if (!projectile.free && this.game.checkCollision(this, projectile)) {
         this.markedForDeletion = true;
         projectile.reset();
-        this.game.score++;
+        if (!this.game.gameOver) this.game.score++;
       }
     });
+    // Check collision
+    if (this.game.checkCollision(this, this.game.player)) {
+      this.markedForDeletion = true;
+      if (!this.game.gameOver && this.game.score > 0) this.game.score--;
+      this.game.player.lives--;
+      if (this.game.player.lives < 1) this.game.gameOver = true;
+    }
     // Lose condition
     if (this.y + this.height > this.game.height) {
       this.game.gameOver = true;
@@ -139,7 +147,7 @@ class Game {
     this.createProjectiles();
 
     this.columns = 5;
-    this.rows = 5;
+    this.rows = 11;
     this.enemySize = 60;
 
     this.waves = [];
@@ -173,6 +181,7 @@ class Game {
         this.newWave();
         this.waveCount++;
         wave.nextWaveTrigger = true;
+        this.player.lives++;
       }
     });
   }
@@ -204,10 +213,19 @@ class Game {
     context.shadowColor = 'black';
     context.fillText('Score: ' + this.score, 20, 40);
     context.fillText('Wave: ' + this.waveCount, 20, 80);
+    for (let i = 0; i < this.player.lives; i++) {
+      context.fillRect(20 + 10 * i, 100, 5, 20);
+    }
     if (this.gameOver) {
       context.textAlign = 'center';
       context.font = '100px Impact';
       context.fillText('GAME OVER!', this.width * 0.5, this.height * 0.5);
+      context.font = '20px Impact';
+      context.fillText(
+        'Press R to restart.',
+        this.width * 0.5,
+        this.height * 0.5 + 30
+      );
     }
     context.restore();
   }
