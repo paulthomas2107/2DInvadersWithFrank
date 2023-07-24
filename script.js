@@ -19,6 +19,10 @@ class Player {
     else if (this.x > this.game.width - this.width)
       this.x = this.game.width - this.width;
   }
+  shoot() {
+    const projectile = this.game.getProjectile();
+    if (projectile) projectile.start(this.x, this.y);
+  }
 }
 
 class Projectile {
@@ -38,9 +42,12 @@ class Projectile {
   update() {
     if (!this.free) {
       this.y -= this.speed;
+      if (this.y < -this.height) this.reset();
     }
   }
-  start() {
+  start(x, y) {
+    this.x = x;
+    this.y = y;
     this.free = false;
   }
   reset() {
@@ -61,10 +68,12 @@ class Game {
     this.projectilesPool = [];
     this.numberOfProjectTiles = 10;
     this.createProjectiles();
+    console.log(this.projectilesPool);
 
     // Event Listeners
     window.addEventListener('keydown', (e) => {
       if (this.keys.indexOf(e.key) === -1) this.keys.push(e.key);
+      if (e.key === '1') this.player.shoot();
     });
     window.addEventListener('keyup', (e) => {
       const index = this.keys.indexOf(e.key);
@@ -74,6 +83,10 @@ class Game {
   render(context) {
     this.player.draw(context);
     this.player.update();
+    this.projectilesPool.forEach((projectile) => {
+      projectile.update();
+      projectile.draw(context);
+    });
   }
   // Create projectiles pool
   createProjectiles() {
