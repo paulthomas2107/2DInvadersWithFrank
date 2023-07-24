@@ -74,8 +74,9 @@ class Enemy {
     this.y = y + this.positionY;
     // Check collision
     this.game.projectilesPool.forEach((projectile) => {
-      if (this.game.checkCollision(this, projectile)) {
+      if (!projectile.free && this.game.checkCollision(this, projectile)) {
         this.markedForDeletion = true;
+        projectile.reset();
       }
     });
   }
