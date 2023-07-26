@@ -1,15 +1,45 @@
 class Player {
   constructor(game) {
     this.game = game;
-    this.width = 100;
-    this.height = 100;
+    this.width = 140;
+    this.height = 120;
     this.x = this.game.width * 0.5 - this.width * 0.5;
     this.y = this.game.height - this.height;
-    this.speed = 10;
+    this.speed = 5;
     this.lives = 3;
+    this.image = document.getElementById('player');
+    this.jets_image = document.getElementById('jets_image');
+    this.frameX = 0;
   }
   draw(context) {
-    context.fillRect(this.x, this.y, this.width, this.height);
+    // Handle sprite frames
+    if (this.game.keys.indexOf('1') > -1) {
+      this.frameX = 1;
+    } else {
+      this.frameX = 0;
+    }
+    context.drawImage(
+      this.jets_image,
+      this.frameX * this.width,
+      0,
+      this.width,
+      this.height,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
+    context.drawImage(
+      this.image,
+      this.frameX * this.width,
+      0,
+      this.width,
+      this.height,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
   }
   update() {
     // Horizontal Moveent
@@ -232,12 +262,14 @@ class Game {
     }
 
     this.drawStatusText(context);
-    this.player.draw(context);
-    this.player.update();
     this.projectilesPool.forEach((projectile) => {
       projectile.update();
       projectile.draw(context);
     });
+
+    this.player.draw(context);
+    this.player.update();
+
     this.waves.forEach((wave) => {
       wave.render(context);
       if (wave.enemies.length < 1 && !wave.nextWaveTrigger && !this.gameOver) {
