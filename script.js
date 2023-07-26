@@ -75,6 +75,7 @@ class Enemy {
   }
   draw(context) {
     context.strokeRect(this.x, this.y, this.width, this.height);
+    context.drawImage(this.image, this.x, this.y);
   }
   update(x, y) {
     this.x = x + this.positionX;
@@ -101,6 +102,14 @@ class Enemy {
     }
   }
 }
+
+class Beetlemorph extends Enemy {
+  constructor(game, positionX, positionY) {
+    super(game, positionX, positionY);
+    this.image = document.getElementById('beetlemorph');
+  }
+}
+
 class Wave {
   constructor(game) {
     this.game = game;
@@ -134,7 +143,7 @@ class Wave {
       for (let x = 0; x < this.game.columns; x++) {
         let enemyX = x * this.game.enemySize;
         let enemyY = y * this.game.enemySize;
-        this.enemies.push(new Enemy(this.game, enemyX, enemyY));
+        this.enemies.push(new Beetlemorph(this.game, enemyX, enemyY));
       }
     }
   }
