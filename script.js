@@ -193,6 +193,25 @@ class Rhinomorph extends Enemy {
   }
 }
 
+class Boss {
+  constructor(game) {
+    this.game = game;
+    this.width = 200;
+    this.height = 200;
+    this.x = this.game * 0.5 - this.width * 0.5;
+    this.y = -this.height;
+    this.speedX = Math.random() < 0.5 ? -1 : 1;
+    this.speedY = 0;
+    this.lives = 10;
+    this.maxLives = this.lives;
+    this.markedForDeletion = false;
+    this.image = document.getElementById('boss');
+    this.frameX = 0;
+    this.frameY = Math.floor(Math.random() * 4);
+    this.maxFrame = 11;
+  }
+}
+
 class Wave {
   constructor(game) {
     this.game = game;
@@ -204,6 +223,7 @@ class Wave {
     this.speedY = 0;
     this.enemies = [];
     this.nextWaveTrigger = false;
+    this.markedForDeletion = false;
     this.create();
   }
   render(context) {
@@ -220,6 +240,9 @@ class Wave {
       enemy.draw(context);
     });
     this.enemies = this.enemies.filter((Object) => !Object.markedForDeletion);
+    if (this.enemies.length <= 0) {
+      this.markedForDeletion = true;
+    }
   }
   create() {
     for (let y = 0; y < this.game.rows; y++) {
@@ -363,6 +386,7 @@ class Game {
       this.rows++;
     }
     this.waves.push(new Wave(this));
+    this.waves = this.waves.filter((object) => !object.markedForDeletion);
   }
 
   restart() {
